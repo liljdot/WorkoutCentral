@@ -1,0 +1,22 @@
+/* homepage */
+.home {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 100px;
+}
+
+.workout {
+    display: grid;
+    grid-template-columns: 4fr 0fr;
+    gap: 100px;
+}
+
+/* auth forms */
+form.signup,
+form.login {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #000;
+    border-radius: 4px;
+}

@@ -4,61 +4,17 @@
       "id": "1736959463097",
       "email": "test@test.com",
       "password": "$2a$10$hNWjS47yC0Ru7VccG.n6yePag3Xz5m4h5s0z/z.rdRjRvSLnGGMdu"
-    },
-    {
-      "id": "1736962510022",
-      "email": "test@test.co",
-      "password": "$2a$10$k3.OxkSEDi7F0JU7elKWm.0mt7JYQQHqKN0n6ZXahOPUE5p2PL95y"
-    },
-    {
-      "id": "1736966041545",
-      "email": "test@test.co.uk",
-      "password": "$2a$10$TwwoZiweuIITMe45OMt0u.ebuDcZWGa61XA/vUwYjidYeuLK3t0Ze"
-    },
-    {
-      "id": "1737159910135",
-      "email": "test@test.us",
-      "password": "$2a$10$yFBrNp5beEi99zWFC/.zyODnhW1SYG4TblDL2qS5iY3A837Ohoznq"
-    },
-    {
-      "id": "1737164992047",
-      "email": "jehuoki@gmail.com",
-      "password": "$2a$10$P4AzICHXrLNKKTjb.AoxwezwQ.9u973CsjeGL86AjVX..4/1L.W4G"
-    },
-    {
-      "id": "85b1",
-      "email": "test@test.com",
-      "password": "test1234"
-    },
-    {
-      "id": "a1dc",
-      "email": "test@test.com",
-      "password": "test1234"
-    },
-    {
-      "id": "de71",
-      "email": "test@test.com",
-      "password": "test1234"
     }
   ],
   "workouts": [
     {
       "id": "1737678372452",
-      "title": "jkjew",
+      "title": "Push-ups",
       "reps": 140,
       "load": 112,
       "createdAt": "2025-01-24T00:26:12.452Z",
       "updatedAt": "2025-01-26T19:08:38.393Z",
       "userId": "1736959463097"
-    },
-    {
-      "id": "1737742760330",
-      "title": "Squats",
-      "reps": 150,
-      "load": 0,
-      "createdAt": "2025-01-24T18:19:20.330Z",
-      "updatedAt": "2025-01-24T18:19:20.330Z",
-      "userId": "1737164992047"
     }
   ]
 }

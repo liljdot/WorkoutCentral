@@ -14,3 +14,9 @@ export type NewWorkout = {
     load: number,
     userId: string | undefined
 }
+
+export type ErrorREsponse = {
+    status: number
+    message: string
+    data?: any
+}

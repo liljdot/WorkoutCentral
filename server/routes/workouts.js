@@ -6,6 +6,9 @@ const { requireAuth } = require("../middleware/authMiddleware")
 //create route app
 const routes = express()
 
+//require auth for all routes
+routes.use(requireAuth)
+
 //create routes
 
     //GET REQUESTS
@@ -17,7 +20,7 @@ const routes = express()
 
     //POST REQUESTS
         //POST new workout
-        routes.post('/', requireAuth, postWorkout)
+        routes.post('/', postWorkout)
 
     //DELETE REQUESTS
         //DELETE a workout

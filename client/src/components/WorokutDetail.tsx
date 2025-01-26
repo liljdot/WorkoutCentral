@@ -2,10 +2,11 @@ import { useContext, useState } from "react"
 import { Workout } from "../types"
 import "./styles.css"
 import { allWorkoutsContext } from "../contexts/allWorkoutsContext"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 //date-fns
 import { formatDistanceToNow } from "date-fns"
+import useDeleteWorkout from "../hooks/useDeleteWorkout"
 
 interface Props {
     workout: Workout
@@ -23,19 +24,20 @@ const WorkoutDetail: React.FC<Props> = ({ workout }) => {
 
     const { workoutsDispatch } = workoutsContext
     const [deleteError, setDeleteError] = useState<{ status: number, message: any } | null>(null)
+    const navigate = useNavigate()
+    const deleteWorkout = useDeleteWorkout()
 
     const handleDelete: React.EventHandler<React.MouseEvent> = async (e) => {
         e.preventDefault()
         try {
-            const response = await fetch(`http://${host}/api/workouts/${workout.id}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
+            const response = await deleteWorkout(workout.id)
 
             if (!response.ok) {
                 const error = await response.json()
+                if (error.status == 401) {
+                    return navigate("/login")
+                }
+                
                 setDeleteError(error)
                 return
             }

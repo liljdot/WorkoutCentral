@@ -8,7 +8,9 @@ import { workoutFormInitialState, workoutFormReducer } from "../reducers/workout
 import { workoutContext } from "../contexts/workoutContext"
 import { allWorkoutsContext } from "../contexts/allWorkoutsContext"
 import { useAuthContext } from "../hooks/useAuthContext"
-import { useNavigate } from "react-router-dom"
+import { ErrorResponse, useNavigate } from "react-router-dom"
+import { rejectJson } from "../hooks/rejectJson"
+import { useLogout } from "../hooks/useLogout"
 
 const Home: React.FC = () => {
     let host = window.location.host
@@ -17,7 +19,7 @@ const Home: React.FC = () => {
     const context = useContext(allWorkoutsContext)
     const {authState, authDispatch} = useAuthContext()
     const {user} = authState
-    const navigate = useNavigate()
+    const {logout} = useLogout()
     if (!context) {
         return
     }
@@ -27,10 +29,12 @@ const Home: React.FC = () => {
     const [workoutFormState, workoutFormDispatch] = useReducer(workoutFormReducer, workoutFormInitialState)
 
     useEffect(() => {
-        fetch(`http://${host}/api/workouts`)
-            .then((res: Response) => !res.ok ? setWorkoutsError(true) : res.json())
+        fetch(`http://${host}/api/workouts`, {
+            credentials: "include"
+        })
+            .then((res: Response) => !res.ok ? rejectJson(res) : res.json())
             .then((val: Workout[]) => workoutsDispatch({type: "SET_ALL_WORKOUTS", payload: val}))
-            .catch((e: Error) => console.log(e))
+            .catch((e: ErrorResponse) => {e.status != 401 ? setWorkoutsError(true) : logout(`http://${host}/api/user/logout`)})
     }, [])
 
     return (

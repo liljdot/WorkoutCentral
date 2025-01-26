@@ -6,7 +6,15 @@ const DB_URL = process.env.DB_URL
 //GET REQUESTS
         //GET all workouts
         module.exports.getWorkouts = (req, res) => {
-            fetch(DB_URL + "/workouts")
+            if (req.error) {
+                return res.status(req.error.status).json({status: req.error.status, message: req.error.message})
+            }
+            
+            if (!req.user) {
+                return res.status(401).json({status: 401, message: "You must be logged in to view workouts"})
+            }
+
+            fetch(DB_URL + `/workouts?userId=${req.user.id}`)
             .then(response => !response.ok ? (() => {throw new Error(response)})() : response.json())
             .then(workouts => res.status(200).json(workouts))
             .catch(e => res.status(400).json({status: 400, message: e.message}))
@@ -14,10 +22,18 @@ const DB_URL = process.env.DB_URL
 
         //GET single workout
         module.exports.getSingleWorkout = (req, res) => {
+            if (req.error) {
+                return res.status(req.error.status).json({status: req.error.status, message: req.error.message})
+            }
+
+            if (!req.user) {
+                return res.status(401).json({status: 401, message: "You must be logged in to view workouts"})
+            }
+
             const { id } = req.params
             fetch(DB_URL + `/workouts/${id}`)
             .then(response => !response.ok ? (() => {throw new Error("cannot find item")})() : response.json())
-            .then(workout => res.status(200).json(workout))
+            .then(workout => workout.userId != req.user.id ? res.status(401).json({status: 401, message: "You are not authorized to view this workout"}) : res.status(200).json(workout))
             .catch(e => res.status(400).json({status: 400, message: e.message}))
         }
 
@@ -29,6 +45,10 @@ const DB_URL = process.env.DB_URL
 
             if (!title || isNaN(load) || isNaN(reps)) {
                 return res.status(400).json({status: 400, message: "required fields not filled"})
+            }
+
+            if (req.error) {
+                return res.status(req.error.status).json({status: req.error.status, message: req.error.message})
             }
             
             if (!userId || !req.user) {
@@ -54,18 +74,26 @@ const DB_URL = process.env.DB_URL
 //DELETE REQUESTS
         //DELETE a workout
         module.exports.deleteWorkout = (req, res) => {
+            if (req.error) {
+                return res.status(req.error.status).json({status: req.error.status, message: req.error.message})
+            }
+
+            if (!req.user) {
+                return res.status(401).json({status: 401, message: "You must be logged in to delete workout"})
+            }
+
             const { id } = req.params
             
-            fetch(DB_URL + `/workouts/${id}`)
-            .then(response => !response.ok ? (() => {throw new Error("cannot find item")})() : response.json())
-            .then(workout => !workout ? (() => {throw new Error("item not found")})() : workout.id)
+            fetch(DB_URL + `/workouts?id=${id}&userId=${req.user.id}`)
+            .then(response => !response.ok ? (() => {throw new Error("Database Error")})() : response.json())
+            .then(([workout]) => !workout ? (() => {throw new Error("item not found")})() : workout.id)
             .then(id => fetch(DB_URL + "/workouts/" + id, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
                 }
             }))
-            .then(response => !response.ok ? (() => {throw new Error("item could not be deleted")})() : res.status(200).json({status: 200, message: "workout successfully deleted"}))
+            .then(response => !response.ok ? (() => {throw new Error("item could not be deleted")})() : res.status(201).json({status: 201, message: "workout successfully deleted"}))
             .catch(e => res.status(400).json({status: 400, message: e.message}))
         }
 
@@ -80,9 +108,17 @@ const DB_URL = process.env.DB_URL
                 return
             }
 
-            fetch(DB_URL + `/workouts/${id}`)
-            .then(response => !response.ok ? (() => {throw new Error("cannot find item")})() : response.json())
-            .then(workout => !workout ? (() => {throw new Error("item not found")})() : workout)
+            if (req.error) {
+                return res.status(req.error.status).json({status: req.error.status, message: req.error.message})
+            }
+
+            if (!req.user) {
+                return res.status(401).json({status: 401, message: "You must be logged in to edit workout"})
+            }
+
+            fetch(DB_URL + `/workouts?id=${id}&userId=${req.user.id}`)
+            .then(response => !response.ok ? (() => {throw new Error("Database error")})() : response.json())
+            .then(([workout]) => !workout ? (() => {throw new Error("item not found")})() : workout)
             .then(workout => fetch(DB_URL + "/workouts/" + workout.id, {
                 method: "PATCH",
                 headers: {

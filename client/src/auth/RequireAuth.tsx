@@ -20,7 +20,7 @@ const RequireAuth: React.FC = () => {
 
         getUser(`http://${host}/api/user`)
             .then(res => userResponse = res.data.user)
-            .catch(e => { console.log(e.message); userResponse = e.data.user })
+            .catch(e => { console.log(e.message); userResponse = e.data?.user })
             .finally(() => {
                 if (!user) {
                     authDispatch({ type: "SET_USER", payload: userResponse })
@@ -28,7 +28,7 @@ const RequireAuth: React.FC = () => {
                     return
                 }
 
-                if (user.id != userResponse.id) {
+                if (user.id != userResponse?.id) {
                     logout(`http://${host}/api/user/logout`)
                     setIsLoading(false)
                     return

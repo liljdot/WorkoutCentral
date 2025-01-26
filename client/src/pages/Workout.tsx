@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { CSSProperties, useEffect, useState } from "react"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import type { Workout } from "../types"
 import { Button } from "react-bootstrap"
 
 //date-fns
 import { format } from "date-fns"
+import useDeleteWorkout from "../hooks/useDeleteWorkout"
+
+//spinner
+import { ClipLoader } from "react-spinners"
 
 const Workout: React.FC = () => {
     let host: string = window.location.host
@@ -13,19 +17,25 @@ const Workout: React.FC = () => {
 
     const { id } = useParams()
     const [workout, setWorkout] = useState<Workout>()
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [error, setError] = useState<{ status: number, message: any } | null>(null)
+    const navigate = useNavigate()
+    const deleteWorkout = useDeleteWorkout()
+    const override: CSSProperties = {
+        display: "block",
+        margin: "0 auto",
+        position: "relative"
+    }
 
     const handleDelete: React.EventHandler<React.MouseEvent> = async () => {
         try {
-            const res = await fetch(`http://${host}/api/workouts/${id}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
+            const res = await deleteWorkout(id)
 
             if (!res.ok) {
                 const deleteError = await res.json()
+                if (deleteError.status == 401) {
+                    return navigate("/login")
+                }
                 setError(deleteError)
                 return
             }
@@ -41,15 +51,20 @@ const Workout: React.FC = () => {
     useEffect(() => {
         const fetchWorkout: () => void = async () => {
             try {
-                const res = await fetch(`http://${host}/api/workouts/${id}`)
+                setIsLoading(true)
+                const res = await fetch(`http://${host}/api/workouts/${id}`, {
+                    credentials: "include"
+                })
 
                 if (!res.ok) {
                     const fetchError = await res.json()
                     setError(fetchError)
+                    setIsLoading(false)
                     return
                 }
 
                 setWorkout(await res.json())
+                setIsLoading(false)
             } catch (e) {
                 console.log(e)
             }
@@ -70,8 +85,21 @@ const Workout: React.FC = () => {
                             <h3>Date: {format(new Date(workout.createdAt), "dd-MM-yyyy     HH:mm:ss")}</h3>
                             <Button className="material-symbols-outlined" onClick={handleDelete}>delete</Button>
                             {error && <div className="error">{error.message}</div>}
+
                         </>
-                    ) : <h4>Workout Data Not Found</h4>}
+                    ) : isLoading ? (
+                        <ClipLoader
+                            color="var(--primary)"
+                            cssOverride={override}
+                            loading={true}
+                            size={150}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                        />
+                    ) : (<>
+                        <div className="error">{error?.message || "Workout Data Not Found"}</div>
+                        <Link to={"/"}><button>View My Workouts</button></Link>
+                    </>)}
                 </div>
             </div>
         </div>

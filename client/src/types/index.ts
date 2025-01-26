@@ -1,1 +1,1 @@
-export type { Workout, NewWorkout } from './workoutTypes'
+export type { Workout, NewWorkout, ErrorREsponse } from './workoutTypes'

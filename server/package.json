@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:database": "npx json-server --watch db.json --port 3000",
-    "dev:server": "nodemon server.js",
+    "dev:server": "nodemon index.js",
     "dev": "concurrently \"npm run dev:database\" \"npm run dev:server\""
   },
   "keywords": [],
